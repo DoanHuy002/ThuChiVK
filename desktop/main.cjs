@@ -1,0 +1,41 @@
+const {app,BrowserWindow,ipcMain,dialog}=require('electron');
+const {spawn}=require('child_process');const fs=require('fs'),path=require('path'),crypto=require('crypto'),net=require('net');
+const {autoUpdater}=require('electron-updater');
+app.setName('VinhKhangThuChi');
+let win,child,base,closing=false,maintenance=false;const secret=crypto.randomBytes(32).toString('hex');
+const root=path.join(__dirname,'..');const data=process.env.VK_DATA_DIR||'D:/Codex/Projects/VinhKhangThuChiData';
+let state={},active=0,updates,installToken='';
+const lock=app.requestSingleInstanceLock();if(!lock)app.quit();
+app.on('second-instance',()=>{win?.show();win?.focus();});
+function checkSender(e){if(!win||e.sender.id!==win.webContents.id)throw Error('Không được cho phép');}
+async function api(route,method='GET',body,token='') {
+ if(maintenance)throw Error('App đang chuẩn bị cập nhật');
+ if(!/^\/api\/[a-z0-9/-]+(?:\?from=\d{4}-\d{2}-\d{2}&to=\d{4}-\d{2}-\d{2})?$/.test(route)||!['GET','POST','PUT','DELETE'].includes(method))throw Error('Yêu cầu không hợp lệ');
+ active++;try{const r=await fetch(base+route,{method,headers:{'Content-Type':'application/json','X-VK-Bridge':secret,Authorization:'Bearer '+token},body:body==null?undefined:JSON.stringify(body)});const b=await r.json();if(!r.ok)throw Error(b.error||'Không thực hiện được');return b;}finally{active--;}
+}
+async function authorize(token){let u=await api('/api/auth/me','GET',null,token);if(u.role!=='ADMIN')throw Error('Chỉ Admin được thực hiện');return u;}
+function notify(s){state=s;if(win&&!win.isDestroyed())win.webContents.send('update-state',s);}
+function port(){return new Promise((res,rej)=>{let s=net.createServer();s.on('error',rej);s.listen(0,'127.0.0.1',()=>{let p=s.address().port;s.close(()=>res(p));});});}
+async function boot(){
+ if(!fs.existsSync('D:/')&&!process.env.VK_DATA_DIR)throw Error('Không có ổ D. Chưa chọn nơi lưu dữ liệu.');
+ fs.mkdirSync(data,{recursive:true});app.setPath('userData',path.join(data,'profile'));fs.mkdirSync(app.getPath('userData'),{recursive:true});
+ let p=await port();base='http://127.0.0.1:'+p;
+ const java=app.isPackaged?path.join(process.resourcesPath,'runtime/bin/java.exe'):path.join(root,'runtime/bin/java.exe');
+ const jar=app.isPackaged?path.join(process.resourcesPath,'backend.jar'):path.join(root,'backend/target/thuchi-1.0.1.jar');
+ let log=fs.openSync(path.join(data,'backend.log'),'a');
+ fs.mkdirSync(path.join(data,'sockets'),{recursive:true});child=spawn(java,['-Djdk.net.unixdomain.tmpdir='+path.join(data,'sockets'),'-jar',jar],{windowsHide:true,env:{...process.env,VK_DATA_DIR:data,VK_PORT:String(p),VK_BRIDGE_SECRET:secret,VK_DESKTOP:'true'},stdio:['pipe',log,log]});fs.closeSync(log);
+ let err;child.on('error',e=>err=e);
+ for(let i=0;i<120;i++){if(err||child.exitCode!==null)break;try{let h=await api('/api/health');if(h.status==='UP')return;}catch{}await new Promise(r=>setTimeout(r,250));}
+ throw Error('Không khởi động được dịch vụ dữ liệu. Xem backend.log trong thư mục dữ liệu.');
+}
+async function stop(force=true){if(!child||child.exitCode!==null)return;await new Promise((resolve,reject)=>{let t=setTimeout(()=>{if(force){child.kill();resolve();}else reject(Error("Chưa đóng được dịch vụ dữ liệu"));},8000);child.once('exit',()=>{clearTimeout(t);resolve();});child.stdin.end();});}
+ipcMain.handle('api',(e,b)=>{checkSender(e);return api(b.route,b.method,b.body,b.token);});
+ipcMain.handle('export-csv',async(e,{name,text})=>{checkSender(e);if(typeof text!=='string'||text.length>10000000)throw Error('Báo cáo quá lớn');if(!fs.existsSync('D:/'))throw Error('Không có ổ D');fs.mkdirSync('D:/Codex/Downloads',{recursive:true});let p=await dialog.showSaveDialog(win,{title:'Xuất báo cáo',defaultPath:path.join('D:/Codex/Downloads',path.basename(name)),filters:[{name:'CSV',extensions:['csv']}]});if(p.canceled)return {canceled:true};fs.writeFileSync(p.filePath,'\ufeff'+text,'utf8');return {file:p.filePath};});
+ipcMain.handle('save-backup',async(e,{name,token})=>{checkSender(e);await authorize(token);if(!/^thuchi-[0-9]+-[a-f0-9]{6}\.sqlite$/.test(name))throw Error('Tên không hợp lệ');if(!fs.existsSync('D:/'))throw Error('Không có ổ D');fs.mkdirSync('D:/Codex/Downloads',{recursive:true});let p=await dialog.showSaveDialog(win,{title:'Lưu bản sao để chuyển máy',defaultPath:path.join('D:/Codex/Downloads',name),filters:[{name:'Vĩnh Khang Backup',extensions:['sqlite']}]});if(p.canceled)return {canceled:true};let r=await fetch(base+'/api/backups/'+name,{headers:{'X-VK-Bridge':secret,Authorization:'Bearer '+token}});if(!r.ok)throw Error('Không đọc được bản sao lưu');fs.writeFileSync(p.filePath,Buffer.from(await r.arrayBuffer()));return {file:p.filePath};});
+ipcMain.handle('restore',async(e,{password,token})=>{checkSender(e);await authorize(token);let p=await dialog.showOpenDialog(win,{title:'Chọn bản sao lưu Thu Chi Vĩnh Khang',defaultPath:'D:/Codex/Downloads',properties:['openFile'],filters:[{name:'Vĩnh Khang Backup',extensions:['sqlite']}]});if(p.canceled)return {canceled:true};let file=p.filePaths[0];if(fs.statSync(file).size>100*1024*1024)throw Error('Bản sao lưu quá 100 MB');let form=new FormData();form.append('file',new Blob([fs.readFileSync(file)]),'backup.sqlite');form.append('password',password);let r=await fetch(base+'/api/restore',{method:'POST',headers:{'X-VK-Bridge':secret,Authorization:'Bearer '+token},body:form});let b=await r.json();if(!r.ok)throw Error(b.error||'Không khôi phục được');return b;});
+ipcMain.handle('import-excel',async(e,{token})=>{checkSender(e);await authorize(token);let p=await dialog.showOpenDialog(win,{title:'Chọn sổ thu chi Excel',defaultPath:'D:/Codex/Downloads',properties:['openFile'],filters:[{name:'Excel',extensions:['xlsx']}]});if(p.canceled)return {canceled:true};let file=p.filePaths[0];if(fs.statSync(file).size>10*1024*1024)throw Error('File Excel quá 10 MB');let form=new FormData();form.append('file',new Blob([fs.readFileSync(file)]),path.basename(file));active++;try{if(maintenance)throw Error('App đang chuẩn bị cập nhật');let r=await fetch(base+'/api/import/upload',{method:'POST',headers:{'X-VK-Bridge':secret,Authorization:'Bearer '+token},body:form});let b=await r.json();if(!r.ok)throw Error(b.error||'Không đọc được Excel');return b;}finally{active--;}});
+ipcMain.handle('updates',async(e,{action,token,url})=>{checkSender(e);if(action==='status')return updates.snapshot();if(action==='configure')return updates.save({token,url});if(action==='check')return updates.check(token);if(action==='download')return updates.download(token);if(action==='install'){installToken=token;return updates.install(token);}throw Error('Thao tác không hợp lệ');});
+function setupUpdates(){const {UpdateManager}=require('./updates.cjs');updates=new UpdateManager({updater:autoUpdater,version:app.getVersion(),packaged:app.isPackaged,dataDir:data,defaults:{url:'https://github.com/DoanHuy002/ThuChiVK'},authorize,notify,prepareInstall:async()=>{await api('/api/backup','POST',null,installToken);maintenance=true;try{for(let i=0;active>0&&i<100;i++)await new Promise(r=>setTimeout(r,100));if(active)throw Error('Còn thao tác chưa hoàn tất');await stop(false);}catch(e){maintenance=false;throw e;}}});}
+if(lock)app.whenReady().then(async()=>{try{await boot();setupUpdates();win=new BrowserWindow({width:1450,height:940,minWidth:1050,minHeight:700,title:'Thu Chi Vĩnh Khang',icon:path.join(__dirname,'logo.ico'),show:process.env.VK_TEST_HIDDEN!=='true',webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true}});win.webContents.setWindowOpenHandler(()=>({action:'deny'}));win.webContents.on('will-navigate',(e,url)=>{if(url!==win.webContents.getURL())e.preventDefault();});await win.loadFile(path.join(root,'dist/index.html'));if(app.isPackaged){const check=()=>updates.check(null,true).catch(()=>{});setTimeout(check,5000).unref();setInterval(check,4*60*60*1000).unref();}child.on('exit',()=>{if(!closing&&!maintenance)dialog.showErrorBox('Dịch vụ dữ liệu đã dừng','Đóng app và mở lại trước khi tiếp tục ghi phiếu.');});}catch(e){dialog.showErrorBox('Không mở được app',e.message);await stop();closing=true;app.quit();}});
+app.on('window-all-closed',()=>app.quit());
+app.on('before-quit',e=>{if(!closing&&child?.exitCode===null){e.preventDefault();closing=true;stop().finally(()=>app.quit());}});

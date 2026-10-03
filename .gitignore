@@ -1,0 +1,16 @@
+node_modules/
+backend/target/
+data/
+runtime/
+dist/
+releases/
+*.log
+.test-data*/
+
+private/
+.test-ui*/
+outputs/
+docs/excel-analysis.json
+docs/PHAN-TICH-EXCEL.md
+*.sqlite
+*.sqlite-*

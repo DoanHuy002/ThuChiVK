@@ -1,0 +1,74 @@
+{
+  "name": "vinhkhang-thuchi",
+  "productName": "Vĩnh Khang Thu Chi",
+  "version": "1.0.1",
+  "private": true,
+  "type": "module",
+  "main": "desktop/main.cjs",
+  "description": "Quản lý thu chi Vĩnh Khang",
+  "author": "Vĩnh Khang",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "node scripts/build.mjs",
+    "start": "electron .",
+    "package": "node scripts/build.mjs && electron-builder --config electron-builder.config.cjs --win nsis --publish never",
+    "test": "node tests/integration.mjs"
+  },
+  "dependencies": {
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "electron-updater": "6.6.2"
+  },
+  "devDependencies": {
+    "vite": "7.1.0",
+    "electron": "44.5.1",
+    "electron-builder": "26.15.3",
+    "esbuild": "0.25.12"
+  },
+  "build": {
+    "appId": "vn.vinhkhang.thuchi",
+    "directories": {
+      "output": "releases"
+    },
+    "files": [
+      "dist/**",
+      "desktop/**",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "backend/target/thuchi-1.0.1.jar",
+        "to": "backend.jar"
+      },
+      {
+        "from": "runtime",
+        "to": "runtime"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "desktop/logo.ico",
+      "signAndEditExecutable": true,
+      "signExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false,
+      "installerIcon": "desktop/logo.ico",
+      "uninstallerIcon": "desktop/logo.ico"
+    },
+    "artifactName": "VinhKhang-ThuChi-Setup-${version}.${ext}",
+    "electronDist": "node_modules/electron/dist",
+    "npmRebuild": false,
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "DoanHuy002",
+        "repo": "ThuChiVK",
+        "releaseType": "release",
+        "private": false
+      }
+    ]
+  }
+}
