@@ -6,3 +6,6 @@
 - Kiểm thử cập nhật: quyền, mất mạng, checksum lỗi, sao lưu lỗi và thứ tự đóng dữ liệu trước cài.
 
 Chỉ sử dụng dữ liệu giả trong thư mục kiểm thử riêng. Không đưa database hoặc dữ liệu doanh nghiệp lên GitHub.
+
+- Giao diện Electron từ mã nguồn và executable đóng gói đã đạt: nhập ngân hàng/số tài khoản, chọn tài khoản khi chuyển quỹ, mã nhân viên, ghi/sửa/xóa/chấm lại công, khóa/mở khóa tháng và xuất CSV.
+- Đã công bố GitHub Release v1.0.2. Dùng electron-updater thật với phiên bản client 1.0.1: nhận v1.0.2 không dùng thông tin đăng nhập GitHub, tải EXE và kiểm tra SHA512 thành công. Kiểm thử trực tuyến dừng sau tải, không thay app vận hành.
