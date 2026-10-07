@@ -4,9 +4,15 @@ App Windows quản lý thu chi, công nợ và tạm ứng: Electron + React, Sp
 
 ## Cài đặt
 
-Tải `VinhKhang-ThuChi-Setup-1.0.1.exe` tại [GitHub Releases](https://github.com/DoanHuy002/ThuChiVK/releases/latest). Bộ cài kèm Java 21. Xem [hướng dẫn sử dụng](HUONG-DAN-SU-DUNG.md).
+Tải `VinhKhang-ThuChi-Setup-1.0.2.exe` tại [GitHub Releases](https://github.com/DoanHuy002/ThuChiVK/releases/latest). Bộ cài kèm Java 21. Xem [hướng dẫn sử dụng](HUONG-DAN-SU-DUNG.md).
 
 Dữ liệu mặc định: `D:\Codex\Projects\VinhKhangThuChiData`. Máy không có D cần cấu hình `VK_DATA_DIR` tới nơi người dùng chọn. Cập nhật phần mềm không đồng bộ dữ liệu giữa các máy. Mã nguồn và bộ cài không chứa dữ liệu Excel doanh nghiệp.
+
+## Chấm công và ngân hàng
+
+Chấm công thủ công theo ngày/tháng, nửa ngày, phép, nghỉ không lương và tăng ca. Sửa/xóa cần lý do, khóa tháng để chốt, mở khóa có lịch sử. Mã chấm công duy nhất chuẩn bị ghép dữ liệu máy sau này. Hiện chưa kết nối máy và chưa tính lương tự động.
+
+Nguồn tiền ngân hàng có tên ngân hàng, số tài khoản dạng chữ và chủ tài khoản. Mỗi nguồn tiền có số dư riêng; khi ghi phiếu/chuyển quỹ chọn tài khoản theo số tài khoản hiển thị.
 
 ## Build Windows
 
@@ -19,6 +25,8 @@ npm run build
 npm start
 npm test
 node tests/updates.cjs
+# Kiểm thử migration cần VK_OLD_JAR tới backend.jar bản 1.0.1
+node tests/migration.mjs
 node tests/ui.cjs
 npm run package
 ```

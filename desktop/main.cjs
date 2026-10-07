@@ -21,7 +21,7 @@ async function boot(){
  fs.mkdirSync(data,{recursive:true});app.setPath('userData',path.join(data,'profile'));fs.mkdirSync(app.getPath('userData'),{recursive:true});
  let p=await port();base='http://127.0.0.1:'+p;
  const java=app.isPackaged?path.join(process.resourcesPath,'runtime/bin/java.exe'):path.join(root,'runtime/bin/java.exe');
- const jar=app.isPackaged?path.join(process.resourcesPath,'backend.jar'):path.join(root,'backend/target/thuchi-1.0.1.jar');
+ const jar=app.isPackaged?path.join(process.resourcesPath,'backend.jar'):path.join(root,'backend/target/thuchi-1.0.2.jar');
  let log=fs.openSync(path.join(data,'backend.log'),'a');
  fs.mkdirSync(path.join(data,'sockets'),{recursive:true});child=spawn(java,['-Djdk.net.unixdomain.tmpdir='+path.join(data,'sockets'),'-jar',jar],{windowsHide:true,env:{...process.env,VK_DATA_DIR:data,VK_PORT:String(p),VK_BRIDGE_SECRET:secret,VK_DESKTOP:'true'},stdio:['pipe',log,log]});fs.closeSync(log);
  let err;child.on('error',e=>err=e);

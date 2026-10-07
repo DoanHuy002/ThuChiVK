@@ -19,7 +19,7 @@ App có database độc lập với QLK, không dùng chung số dư hoặc tài
 | clearings | Quyết toán chi phí từ tạm ứng đã cấp | Không tác động quỹ; không sửa/xóa chứng từ quyết toán V1 |
 | audit | Người thao tác, thời điểm UTC, hành động, trước/sau, lý do | Không có API xóa/sửa, trigger SQLite chặn update/delete |
 
-Schema thực thi: `backend/src/main/resources/schema.sql`. PRAGMA user_version=1. Từ chối database mới hơn app. Phiên bản sau phải có migration và sao lưu trước migration. Không khởi tạo lại database để cập nhật.
+Schema thực thi: `backend/src/main/resources/schema.sql`. PRAGMA user_version=2; schema.sql tạo schema cơ sở 1 và migration-v2.sql nâng cấp lên 2 trong transaction. Từ chối database mới hơn app. Phiên bản sau phải có migration và sao lưu trước migration. Không khởi tạo lại database để cập nhật.
 
 ```mermaid
 erDiagram
@@ -33,6 +33,14 @@ erDiagram
  obligations ||--o{ vouchers : settles
  obligations ||--o{ clearings : liquidates
 ```
+
+## Chấm công và thông tin ngân hàng (schema 2)
+
+funds thêm bank_name, account_number, account_holder; số tài khoản lưu TEXT. contacts thêm attendance_code; mã nhân viên không rỗng có unique index không phân biệt hoa/thường.
+
+attendance: một bản ghi mỗi employee_id/date, trạng thái WORK/HALF/PAID_LEAVE/UNPAID_LEAVE/OFF, overtime_minutes (bước 15 phút, tối đa 960 phút), note, source=MANUAL, device_record_key để chuẩn bị nhập máy, người tạo/sửa, version và deleted. Chỉ nhân viên được chấm. attendance_months lưu khóa, version, người chốt và thời điểm. Admin ghi công, VIEWER xem. Sửa/xóa/chấm lại, khóa/mở khóa đều giữ audit và kiểm tra version. Không tác động quỹ hoặc tự tính lương.
+
+Nâng cấp schema 1 → 2 có VACUUM backup trước thay đổi và transaction rollback nếu lỗi. Restore chấp nhận schema 1 hoặc 2; schema 1 được kiểm tra rồi nâng cấp trong file tạm trước thay database hiện tại. Schema 2 phải có đủ các cột/bảng mới; từ chối bản mới hơn app hoặc khai báo schema không khớp.
 
 ## Tiền và số dư
 

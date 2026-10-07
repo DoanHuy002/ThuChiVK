@@ -2,7 +2,7 @@
 
 ## Cài và mở
 
-1. Chạy `releases/VinhKhang-ThuChi-Setup-1.0.1.exe`. Có thể chọn thư mục cài trên D.
+1. Chạy `releases/VinhKhang-ThuChi-Setup-1.0.2.exe`. Có thể chọn thư mục cài trên D.
 2. Mở **Vĩnh Khang Thu Chi** từ shortcut. Bộ cài kèm Java, không cần cài Java/Node riêng trên máy kế toán.
 3. Lần đầu nhập họ tên, tên đăng nhập không dấu và mật khẩu 10–72 ký tự để tạo kế toán Admin.
 4. Lưu mã khôi phục được hiển thị một lần, rồi đăng nhập.
@@ -17,6 +17,18 @@ Dữ liệu mặc định lưu ở `D:\Codex\Projects\VinhKhangThuChiData`, bả
 - **Người dùng**: Admin đăng ký người dùng tiếp theo, chọn Admin hoặc Chỉ xem. Khóa tài khoản thay vì xóa.
 
 Kế toán lưu phiếu là ghi sổ ngay. Không có bước tự duyệt.
+
+## Ngân hàng và chấm công
+
+**Nguồn tiền → Thêm/Sửa → Loại Ngân hàng**: ghi tên ngân hàng, số tài khoản và chủ tài khoản. Tài khoản cũ sau nâng cấp để trống các thông tin này, có thể bổ sung bằng Sửa. Số 0 đầu tài khoản được giữ. Hai tài khoản tạo thành hai nguồn tiền độc lập; phiếu chi trả lương chọn đúng nguồn tiền. App ghi sổ, không tự chuyển tiền ngân hàng.
+
+**Nhân viên → Thêm/Sửa**: nhập mã chấm công riêng cho từng người; có thể để trống nếu chưa dùng máy. Mã không trùng và giữ số 0 đầu. Không đổi loại/xóa nhân viên đã có lịch sử công.
+
+**Chấm công**: chọn tháng, tìm nhân viên, bấm ô ngày. Chọn Đi làm, Nửa ngày, Nghỉ phép, Nghỉ không lương hoặc Nghỉ; ghi tăng ca theo bước 0,25 giờ và ghi chú. Ô trống nghĩa là chưa chấm, không tự tính là nghỉ. Công đi làm và ngày phép được tổng hợp riêng. Sửa/xóa/chấm lại công đã xóa cần lý do.
+
+**Chốt và khóa tháng** chặn thêm/sửa/xóa công. Admin **Mở khóa tháng** kèm lý do nếu cần điều chỉnh. Xuất bảng công CSV mở bằng Excel. Công chưa làm giảm nguồn tiền và chưa tự tính lương; kế toán ghi phiếu chi lương theo số tiền đã xác nhận.
+
+Database nâng cấp tự động từ schema 1 sang 2, có sao lưu trước nâng cấp. Bản 1.0.2 khôi phục được backup của 1.0.1; không dùng app cũ mở database mới. Dữ liệu máy chấm công là phần chuẩn bị, chưa có kết nối thiết bị trong phiên bản này.
 
 ## Làm việc hằng ngày
 
