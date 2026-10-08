@@ -1,5 +1,9 @@
 const {contextBridge,ipcRenderer}=require('electron');
 contextBridge.exposeInMainWorld('vk',{
+ pickEvidence:token=>ipcRenderer.invoke('pick-evidence',{token}),
+ uploadEvidence:(entity,id,key,caption,token)=>ipcRenderer.invoke('upload-evidence',{entity,id,key,caption,token}),
+ discardEvidence:(keys,token)=>ipcRenderer.invoke('discard-evidence',{keys,token}),
+ downloadEvidence:(id,token)=>ipcRenderer.invoke('download-evidence',{id,token}),
  api:(route,method='GET',body=null,token='')=>ipcRenderer.invoke('api',{route,method,body,token}),
  exportCSV:(name,text)=>ipcRenderer.invoke('export-csv',{name,text}),
  saveBackup:(name,token)=>ipcRenderer.invoke('save-backup',{name,token}),

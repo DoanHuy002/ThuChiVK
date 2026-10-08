@@ -14,12 +14,12 @@ App có database độc lập với QLK, không dùng chung số dư hoặc tài
 | funds | Nguồn tiền, loại, số dư đầu kỳ, ngày mở, ghi chú | Không xóa khi đã có chứng từ tham chiếu |
 | categories | Nhóm thu/chi hoặc cả hai | Không đổi nhóm trái chiều chứng từ đã dùng |
 | contacts | Khách hàng, nhà cung cấp, nhân viên, đối tác khác | Chứng từ và công nợ liên kết bằng ID |
-| obligations | Công nợ phải thu/phải trả, đề nghị tạm ứng, hạn, số tiền gốc | Không suy ra nợ từ Excel hoặc diễn giải phiếu |
+| obligations | Công nợ phải trả (bốn nhóm), khoản phải thu cũ chỉ giữ lịch sử, đề nghị tạm ứng, hạn, số tiền gốc | Không suy ra nợ từ Excel hoặc diễn giải phiếu |
 | vouchers | Phiếu thu, chi, chuyển quỹ, phí, liên kết nợ/đối tác, nguồn Excel | Phiếu lưu là đã ghi sổ; hủy bằng deleted=1 |
 | clearings | Quyết toán chi phí từ tạm ứng đã cấp | Không tác động quỹ; không sửa/xóa chứng từ quyết toán V1 |
 | audit | Người thao tác, thời điểm UTC, hành động, trước/sau, lý do | Không có API xóa/sửa, trigger SQLite chặn update/delete |
 
-Schema thực thi: `backend/src/main/resources/schema.sql`. PRAGMA user_version=2; schema.sql tạo schema cơ sở 1 và migration-v2.sql nâng cấp lên 2 trong transaction. Từ chối database mới hơn app. Phiên bản sau phải có migration và sao lưu trước migration. Không khởi tạo lại database để cập nhật.
+Schema thực thi: `backend/src/main/resources/schema.sql`. PRAGMA user_version=3; schema.sql tạo schema cơ sở 1 và migration-v2.sql nâng cấp lần lượt lên 2 rồi 3 trong transaction. Từ chối database mới hơn app. Phiên bản sau phải có migration và sao lưu trước migration. Không khởi tạo lại database để cập nhật.
 
 ```mermaid
 erDiagram
@@ -52,7 +52,7 @@ Cho phép số dư quỹ âm và hiển thị đỏ để kế toán đối chi�
 
 ## Công nợ
 
-Tạo khoản nợ gốc từ hóa đơn/chứng từ hoặc số dư đã xác nhận → ghi phiếu thanh toán có đúng đối tác và ID nợ → tính số còn lại. Phải thu dùng phiếu thu, phải trả dùng phiếu chi. Chặn sai đối tác, sai chiều, thanh toán vượt dư và thanh toán trước ngày nợ. Hủy/sửa phiếu thanh toán sẽ tính lại số dư nợ. Không cho đổi loại/đối tác của khoản đã tạo; tạo khoản mới nếu nhập nhầm loại.
+Tạo khoản nợ gốc từ hóa đơn/chứng từ hoặc số dư đã xác nhận → ghi phiếu thanh toán có đúng đối tác và ID nợ → tính số còn lại. Phải trả dùng phiếu chi; khoản phải thu cũ chỉ giữ liên kết lịch sử. Chặn sai đối tác, sai chiều, thanh toán vượt dư và thanh toán trước ngày nợ. Hủy/sửa phiếu thanh toán sẽ tính lại số dư nợ. Không cho đổi loại/đối tác của khoản đã tạo; tạo khoản mới nếu nhập nhầm loại.
 
 ## Tạm ứng và tiền cá nhân chi hộ
 
@@ -72,7 +72,7 @@ Nhật ký bất biến trong API/SQLite không chống được người có to
 
 VACUUM INTO tạo snapshot nhất quán của toàn database (tài khoản, danh mục, phiếu, nợ, lịch sử). Sao lưu tự động sau khi SQLite mở và phục hồi phiên trước, sao lưu thủ công, sao lưu trước khôi phục/cập nhật. Không copy database đang mở để làm backup.
 
-Khôi phục cần Admin và mật khẩu hiện tại. File tối đa 100MB, integrity_check, foreign_key_check, user_version phù hợp, có bảng và Admin hoạt động, có trigger bảo vệ audit. Kiểm tra trước khi thay file. Tạo snapshot an toàn trước thay thế, đóng các connection kiểm tra, thay database, thu hồi toàn bộ session. Sau đó đăng nhập bằng tài khoản trong bản đã khôi phục.
+Khôi phục cần Admin và mật khẩu hiện tại. File tối đa 512MB, integrity_check, foreign_key_check, user_version phù hợp, có bảng và Admin hoạt động, có trigger bảo vệ audit. Kiểm tra trước khi thay file. Tạo snapshot an toàn trước thay thế, đóng các connection kiểm tra, thay database, thu hồi toàn bộ session. Sau đó đăng nhập bằng tài khoản trong bản đã khôi phục.
 
 File backup chứa dữ liệu doanh nghiệp và tài khoản đã băm, chưa mã hóa toàn file. Giữ tại nơi riêng hoặc thiết bị được bảo vệ. V1 không đồng bộ dữ liệu giữa nhiều máy.
 
@@ -85,3 +85,13 @@ Khóa nguồn gồm tên sheet, hàng và cột để chống nhập trùng kể
 ## Cập nhật
 
 GitHub Releases DoanHuy002/ThuChiVK qua electron-updater + NSIS. App tự kiểm tra khi mở và mỗi 4 giờ. Admin tải → sao lưu → đóng backend → cài → mở lại. Không hạ phiên bản hoặc cài bản thử nghiệm. Kiểm tra checksum file tải; lỗi mạng hoặc sao lưu không gây cập nhật. Database và backup nằm ngoài thư mục cài.
+
+## Schema 3 và nghiệp vụ cập nhật
+
+`migration-v3.sql` thêm contacts.customer_type (DEALER/RETAIL), party_type (SUPPLIER/CARRIER/LENDER/INVESTOR/OTHER), address; obligations.debt_group (SUPPLIER/CARRIER/LOAN/OTHER); vouchers.receipt_group (DEALER/RETAIL/CAPITAL/BORROWING/OTHER khi thu). Bản ghi phải trả cũ mặc định nhóm nhà cung cấp, thu cũ mặc định thu khác để tránh tự suy đoán nội dung. Không xóa khoản phải thu cũ; API danh sách/report loại RECEIVABLE và chặn tạo liên kết mới. Sửa phiếu cũ được giữ liên kết lịch sử.
+
+evidence liên kết entity (vouchers/obligations) và entity_id; lưu tên, MIME, bytes, SHA256, BLOB gốc, caption, deleted, version, created_by/at. Parent được xác nhận trước thao tác; bridge chỉ nhận file do native dialog chọn, nonce sở hữu theo phiên, hết hạn 15 phút. Chặn SVG/loại lạ, kiểm tra đầu file và kích thước ảnh, tên file chỉ là basename; renderer không nhận đường dẫn nguồn. Không cung cấp API ghi trực tiếp đường dẫn. Audit chỉ lưu metadata, không nhân đôi BLOB. Trigger chặn xóa vật lý và sửa nội dung gốc. Gỡ/sửa caption dùng version và lý do. VIEWER đọc cả bản gỡ, ADMIN sửa trên parent còn hiệu lực. VACUUM backup bao gồm BLOB, restore kiểm tra bảng/cột, liên kết, độ dài và trigger trước thay file. Restore nhận schema 1/2/3; file cũ nâng cấp trong bản tạm.
+
+Khoản PAYABLE nhóm LOAN có principal=amount đã xác nhận; LOAN_RECEIVE là receipt/BORROWING, giới hạn nhận không vượt amount. LOAN_PRINCIPAL là expense giảm outstanding; LOAN_INTEREST là expense không giảm outstanding. Giới hạn thanh toán gốc loại self khi sửa, kiểm tra tổng nhận khi sửa; nhóm LOAN không đổi khi có phiếu kể cả đã hủy. Khoản nợ xác nhận tồn tại riêng với dòng tiền, nên nhận vay không tự tạo thêm khoản nợ. Trả lãi sau tất toán gốc được phép. Nhật ký giữ trước/sau và lý do; hủy phiếu tính lại nợ và nguồn tiền.
+
+Dashboard dùng voucher còn hiệu lực trong kỳ cho biểu đồ, report cho tổng tiền và công nợ hiện tại. Chi gồm expense và transfer.fee, không transfer.amount. Phân loại chi có gốc/lãi riêng; thu capital/borrowing tách khỏi sales. Đồ thị cột zero có height=0, pie không dùng số dư âm hoặc dữ liệu giả. Các bộ lọc drilldown dùng receipt_group, purpose, category, fund và nhóm/trạng thái nợ. Nhập ngày và lịch ở renderer Việt hóa, API/SQLite lưu ISO; nhật ký đổi UTC sang Asia/Ho_Chi_Minh khi hiển thị.

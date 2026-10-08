@@ -1,0 +1,11 @@
+ALTER TABLE contacts ADD COLUMN customer_type TEXT NOT NULL DEFAULT 'RETAIL' CHECK(customer_type IN ('DEALER','RETAIL'));
+ALTER TABLE contacts ADD COLUMN party_type TEXT NOT NULL DEFAULT 'OTHER' CHECK(party_type IN ('SUPPLIER','CARRIER','LENDER','INVESTOR','OTHER'));
+ALTER TABLE contacts ADD COLUMN address TEXT NOT NULL DEFAULT '';
+UPDATE contacts SET party_type='SUPPLIER' WHERE kind='SUPPLIER';
+ALTER TABLE obligations ADD COLUMN debt_group TEXT NOT NULL DEFAULT 'SUPPLIER' CHECK(debt_group IN ('SUPPLIER','CARRIER','LOAN','OTHER'));
+ALTER TABLE vouchers ADD COLUMN receipt_group TEXT NOT NULL DEFAULT 'OTHER';
+CREATE TABLE evidence(id INTEGER PRIMARY KEY AUTOINCREMENT,entity TEXT NOT NULL CHECK(entity IN ('vouchers','obligations')),entity_id INTEGER NOT NULL,name TEXT NOT NULL,mime TEXT NOT NULL CHECK(mime IN ('image/png','image/jpeg','application/pdf')),bytes INTEGER NOT NULL CHECK(bytes>0 AND bytes<=8388608),sha256 TEXT NOT NULL,content BLOB NOT NULL,caption TEXT NOT NULL DEFAULT '',deleted INTEGER NOT NULL DEFAULT 0,version INTEGER NOT NULL DEFAULT 1,created_by INTEGER NOT NULL REFERENCES users(id),created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
+CREATE INDEX evidence_entity ON evidence(entity,entity_id,deleted);
+CREATE TRIGGER evidence_no_delete BEFORE DELETE ON evidence BEGIN SELECT RAISE(ABORT,'Evidence immutable'); END;
+CREATE TRIGGER evidence_content_immutable BEFORE UPDATE OF entity,entity_id,name,mime,bytes,sha256,content,created_by,created_at ON evidence BEGIN SELECT RAISE(ABORT,'Evidence content immutable'); END;
+PRAGMA user_version=3;

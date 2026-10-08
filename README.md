@@ -4,7 +4,7 @@ App Windows quản lý thu chi, công nợ và tạm ứng: Electron + React, Sp
 
 ## Cài đặt
 
-Tải `VinhKhang-ThuChi-Setup-1.0.2.exe` tại [GitHub Releases](https://github.com/DoanHuy002/ThuChiVK/releases/latest). Bộ cài kèm Java 21. Xem [hướng dẫn sử dụng](HUONG-DAN-SU-DUNG.md).
+Tải `VinhKhang-ThuChi-Setup-1.1.0.exe` tại [GitHub Releases](https://github.com/DoanHuy002/ThuChiVK/releases/latest). Bộ cài kèm Java 21. Xem [hướng dẫn sử dụng](HUONG-DAN-SU-DUNG.md).
 
 Dữ liệu mặc định: `D:\Codex\Projects\VinhKhangThuChiData`. Máy không có D cần cấu hình `VK_DATA_DIR` tới nơi người dùng chọn. Cập nhật phần mềm không đồng bộ dữ liệu giữa các máy. Mã nguồn và bộ cài không chứa dữ liệu Excel doanh nghiệp.
 
@@ -47,3 +47,9 @@ App tự kiểm tra khi mở và mỗi 4 giờ. Admin chọn tải, rồi app sa
 - Schema thực thi: backend/src/main/resources/schema.sql
 
 Nhập Excel: chọn .xlsx trên máy, đối soát rồi chọn dòng ghi sổ. Không tự phân loại công nợ/đối tác. Các phân tích Excel doanh nghiệp giữ riêng ngoài Git.
+
+## Bản 1.1.0
+
+Bốn nhóm công nợ phải trả, bỏ công nợ khách hàng khỏi nghiệp vụ hiện tại; hồ sơ đại lý/bán lẻ/người góp vốn; thu tiền theo nguồn và tài khoản; gốc/lãi vay riêng; ảnh/PDF và lịch sử bằng chứng nằm trong sao lưu; ngày/lịch tiếng Việt; tổng quan cho giám đốc với biểu đồ cột và tròn, cảnh báo và bộ lọc chi tiết.
+
+Kiểm thử nâng cấp từ schema 2: `node tests/migration-v2.mjs` (cần JAR 1.0.2). Xem hướng dẫn sử dụng để biết giới hạn dung lượng bằng chứng.
