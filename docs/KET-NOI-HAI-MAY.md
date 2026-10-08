@@ -1,13 +1,13 @@
 # Kho và Thu Chi dùng chung dữ liệu
 
-Bản Kho 0.0.21 và Thu Chi 1.2.0. Máy bàn giữ dữ liệu, laptop kết nối qua cùng mạng Wi-Fi hoặc mạng dây. Mỗi app dùng một mã kết nối riêng. Thông tin truyền được mã hóa; vẫn đăng nhập bằng tài khoản của từng app.
+Bản Kho 0.0.21 và Thu Chi 1.2.1. Máy bàn giữ dữ liệu, laptop kết nối qua cùng mạng Wi-Fi hoặc mạng dây. Mỗi app dùng một mã kết nối riêng. Thông tin truyền được mã hóa; vẫn đăng nhập bằng tài khoản của từng app.
 
 ## 1. Thiết lập máy bàn mới
 
 1. Sao chép toàn bộ thư mục này sang máy bàn. Máy bàn cần có ổ D theo nơi lưu Thu Chi đã chọn.
 2. Cài hai bộ cài trong thư mục này. Chọn nơi cài trên ổ D; chưa mở app hoặc đóng cả hai app trước bước tiếp theo.
-3. Chạy `Chuyen-du-lieu-sang-may-ban.cmd`. Chương trình chỉ chuyển khi máy bàn chưa có database; không ghi đè dữ liệu đã có. Dùng tài khoản cũ sau khi chuyển. Kho giữ nguyên mã nguồn đồng bộ để không tạo trùng công nợ.
-4. Mở Kho, đăng nhập Admin, bấm **Kết nối máy chủ** ở góc dưới bên phải → **Máy chủ — giữ dữ liệu chung** → **Lưu và mở lại app**. Làm tương tự với Thu Chi.
+3. Chạy `Chuyen-du-lieu-sang-may-ban.cmd`. Chương trình chỉ chuyển khi máy bàn chưa có database; không ghi đè dữ liệu đã có. Mở từng app và tạo tài khoản Admin mới sau khi chuyển. Giao dịch, nguồn tiền, đối tác và tài khoản cũ đã được xóa; Kho chỉ giữ linh kiện chuẩn, mẫu xe và BOM. Kho giữ nguyên mã nguồn đồng bộ để không tạo trùng công nợ.
+4. Mở Kho, tạo tài khoản Admin rồi đăng nhập, bấm **Kết nối máy chủ** ở góc dưới bên phải → **Máy chủ — giữ dữ liệu chung** → **Lưu và mở lại app**. Làm tương tự với Thu Chi.
 5. Chạy **Bat-ket-noi-WiFi.cmd**, chấp nhận quyền Windows. Chỉ mở hai cổng trong mạng nội bộ với cấu hình mạng **Private**. Nếu Wi-Fi đang là Public, đổi mạng tin cậy của công ty sang Private trong Cài đặt mạng Windows.
 6. Trong Thu Chi → Công nợ phải trả → Kết nối app Kho, chọn file `%APPDATA%\VinhKhangWarehouse\data\finance-sync.json`. Bấm **Đồng bộ từ kho**. Các nguồn cũ được cập nhật đường dẫn, không tạo thêm nguồn trùng. Mở Kho trước và chờ vài giây để file được cập nhật.
 7. Trong từng app, đăng nhập Admin → Kết nối máy chủ → **Hiện mã để kết nối laptop**. Sao chép mã của Kho và mã của Thu Chi riêng biệt. Chọn địa chỉ Wi-Fi của máy bàn nếu có nhiều địa chỉ.
