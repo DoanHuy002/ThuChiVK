@@ -28,6 +28,8 @@ node tests/updates.cjs
 # Kiểm thử migration cần VK_OLD_JAR tới backend.jar bản 1.0.1
 node tests/migration.mjs
 node tests/ui.cjs
+# Bố cục dùng dữ liệu UI thử, cần Node 22.13+ và Chrome
+node tests/visual.cjs
 npm run package
 ```
 

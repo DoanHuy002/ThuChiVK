@@ -11,3 +11,5 @@
 Các phiên kiểm tra dùng thư mục dữ liệu riêng. Bản sao và ảnh/PDF nằm trong SQLite; giới hạn bằng chứng được nêu trong hướng dẫn sử dụng. Bộ cài 1.1.0 được build vào `releases/v1.1.0` để giữ tách khỏi bản chạy cũ.
 
 - Bố cục được kiểm tra bằng Chromium headless ở 1450px/1100px với dữ liệu từ phiên UI thử riêng; ảnh tổng quan và lịch tiếng Việt đã rà soát. Đây là kiểm tra hình thức riêng với kiểm tra nghiệp vụ Electron thực tế.
+
+- Phát hành công khai: https://github.com/DoanHuy002/ThuChiVK/releases/tag/v1.1.0 , đủ EXE/blockmap/latest.yml. Thử engine cập nhật thật với phiên bản hiện tại 1.0.2: nhận 1.1.0 từ GitHub không dùng credentials, tải bộ cài 196.671.992 byte và SHA512 hợp lệ; trạng thái downloaded. Không chạy cài đặt hoặc thay dữ liệu vận hành trong phiên thử.
