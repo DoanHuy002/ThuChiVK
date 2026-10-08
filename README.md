@@ -4,7 +4,7 @@ App Windows quản lý thu chi, công nợ và tạm ứng: Electron + React, Sp
 
 ## Cài đặt
 
-Tải `VinhKhang-ThuChi-Setup-1.1.0.exe` tại [GitHub Releases](https://github.com/DoanHuy002/ThuChiVK/releases/latest). Bộ cài kèm Java 21. Xem [hướng dẫn sử dụng](HUONG-DAN-SU-DUNG.md).
+Tải `VinhKhang-ThuChi-Setup-1.1.1.exe` tại [GitHub Releases](https://github.com/DoanHuy002/ThuChiVK/releases/latest). Bộ cài kèm Java 21. Xem [hướng dẫn sử dụng](HUONG-DAN-SU-DUNG.md).
 
 Dữ liệu mặc định: `D:\Codex\Projects\VinhKhangThuChiData`. Máy không có D cần cấu hình `VK_DATA_DIR` tới nơi người dùng chọn. Cập nhật phần mềm không đồng bộ dữ liệu giữa các máy. Mã nguồn và bộ cài không chứa dữ liệu Excel doanh nghiệp.
 

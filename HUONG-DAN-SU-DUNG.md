@@ -2,9 +2,9 @@
 
 ## Cài và mở
 
-1. Chạy `releases/VinhKhang-ThuChi-Setup-1.1.0.exe`. Có thể chọn thư mục cài trên D.
+1. Chạy `releases/VinhKhang-ThuChi-Setup-1.1.1.exe`. Có thể chọn thư mục cài trên D.
 2. Mở **Vĩnh Khang Thu Chi** từ shortcut. Bộ cài kèm Java, không cần cài Java/Node riêng trên máy kế toán.
-3. Lần đầu nhập họ tên, tên đăng nhập không dấu và mật khẩu 10–72 ký tự để tạo kế toán Admin.
+3. Lần đầu nhập họ tên, tên đăng nhập không dấu và mật khẩu 1–72 ký tự để tạo kế toán Admin.
 4. Lưu mã khôi phục được hiển thị một lần, rồi đăng nhập.
 
 Dữ liệu mặc định lưu ở `D:\Codex\Projects\VinhKhangThuChiData`, bản sao trong thư mục `backups`. Nếu máy không có ổ D, app báo rõ và không tự ghi dữ liệu sang C. Người triển khai có thể đặt biến `VK_DATA_DIR` đến thư mục được chỉ định trước khi mở app.
@@ -85,3 +85,7 @@ Hỗ trợ PNG, JPEG và PDF: tối đa 8 MB/file, 20 file đang sử dụng/ch�
 Ngày nhập và lịch chọn ngày hiển thị **dd/mm/yyyy**, tháng và các nút lịch bằng tiếng Việt, độc lập ngôn ngữ Windows. Ngày/tháng chuẩn ISO vẫn được dùng bên trong database. Nhật ký đổi sang giờ Việt Nam.
 
 **Tổng quan** có kỳ nhanh Hôm nay/Tháng này/Tháng trước/Năm nay, tiền theo từng tài khoản, tổng thu/chi/dòng tiền thuần; công nợ hiện tại, quá hạn, đến hạn 7 ngày và tạm ứng. Biểu đồ cột theo ngày cho kỳ tối đa 45 ngày, theo tháng cho kỳ dài hơn; biểu đồ tròn chia nguồn thu và mục chi, gốc/lãi vay riêng. Bấm cột, chú giải hoặc số liệu để chuyển tới danh sách chi tiết. Có bảng khoản chi lớn và giao dịch gần đây. Khoản không ghi hạn vẫn nằm trong tổng nợ, không tự gắn là quá hạn. Thu/chi chưa phải lợi nhuận; chuyển giữa hai tài khoản nội bộ chỉ tính phí vào chi.
+
+## Bản 1.1.1 — mật khẩu
+
+Mật khẩu tối thiểu 1 ký tự, tối đa 72 ký tự; không được để trống. Áp dụng khi tạo tài khoản, đổi và đặt lại mật khẩu. Mật khẩu cũ vẫn dùng được. Bấm nút mắt bên phải từng ô để hiện/ẩn nội dung vừa nhập; mở form mới mặc định ẩn. Các ô đăng nhập, đăng ký, đổi/đặt lại mật khẩu, tạo người dùng và nhập mật khẩu khôi phục đều có nút mắt.
