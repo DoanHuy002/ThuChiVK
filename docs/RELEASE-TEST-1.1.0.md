@@ -9,3 +9,5 @@
 - Mã chuẩn bị phát hành và JAR được rà soát: không có workbook/dòng dữ liệu Excel thật; import-preview đóng gói là danh sách rỗng. Bộ cài không chứa database hoạt động, mật khẩu/mã khôi phục hoặc dữ liệu thử.
 
 Các phiên kiểm tra dùng thư mục dữ liệu riêng. Bản sao và ảnh/PDF nằm trong SQLite; giới hạn bằng chứng được nêu trong hướng dẫn sử dụng. Bộ cài 1.1.0 được build vào `releases/v1.1.0` để giữ tách khỏi bản chạy cũ.
+
+- Bố cục được kiểm tra bằng Chromium headless ở 1450px/1100px với dữ liệu từ phiên UI thử riêng; ảnh tổng quan và lịch tiếng Việt đã rà soát. Đây là kiểm tra hình thức riêng với kiểm tra nghiệp vụ Electron thực tế.
