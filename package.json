@@ -1,7 +1,7 @@
 {
   "name": "vinhkhang-thuchi",
   "productName": "Vĩnh Khang Thu Chi",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "private": true,
   "type": "module",
   "main": "desktop/main.cjs",
@@ -37,7 +37,7 @@
     ],
     "extraResources": [
       {
-        "from": "backend/target/thuchi-1.1.3.jar",
+        "from": "backend/target/thuchi-1.1.4.jar",
         "to": "backend.jar"
       },
       {

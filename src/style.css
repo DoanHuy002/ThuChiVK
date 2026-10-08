@@ -6,3 +6,5 @@
 .password-control{position:relative;display:flex;align-items:center;width:100%}.password-control input{width:100%;padding-right:48px}.password-control button{position:absolute;right:5px;display:grid;place-items:center;width:36px;height:36px;padding:0;background:transparent;border:0;color:#587596}.password-control button:hover{color:#1558b0;background:#eef5ff}.password-control button:focus-visible{outline:2px solid #1558b0;outline-offset:1px}
 
 .positive{color:#16a34a}.negative{color:#dc2626}
+
+.debt-overview{margin-bottom:24px}.creditor-bars{max-height:350px;overflow:auto;margin-top:18px}.creditor-bars>div{margin-bottom:18px}.creditor-bars .card-heading{margin-bottom:8px;font-size:13px}.creditor-track{height:12px;border-radius:6px;background:#edf2fa}.creditor-track>div{height:100%;border-radius:6px;background:#1558b0}input[readonly]{background:#f4f7fb}

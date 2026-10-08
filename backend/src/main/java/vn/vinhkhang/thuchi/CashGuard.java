@@ -1,0 +1,9 @@
+package vn.vinhkhang.thuchi;
+import java.util.*;
+/** Check every dated balance, preserving legacy deficits without permitting new or deeper deficits. */
+final class CashGuard {
+ record Funds(Map<Long,NavigableMap<String,Long>> balances,Map<Long,String> names){}
+ static Funds read(Api a){var balances=new LinkedHashMap<Long,NavigableMap<String,Long>>();var names=new HashMap<Long,String>();for(var f:a.db.queryForList("SELECT * FROM funds WHERE deleted=0")){long id=Api.num(f,"id");names.put(id,Api.str(f,"name"));var changes=new TreeMap<String,Long>();changes.merge(Api.str(f,"opening_date"),Api.num(f,"opening"),Long::sum);for(var v:a.db.queryForList("SELECT * FROM vouchers WHERE deleted=0 AND (fund_id=? OR to_fund_id=?)",id,id)){long delta=Api.num(v,"fund_id")==id?(Api.str(v,"type").equals("RECEIPT")?Api.num(v,"amount"):-Api.num(v,"amount")-Api.num(v,"fee")):0;if(Api.num(v,"to_fund_id")==id)delta+=Api.num(v,"amount");changes.merge(Api.str(v,"date"),delta,Long::sum);}var running=new TreeMap<String,Long>();long value=0;for(var e:changes.entrySet()){value+=e.getValue();running.put(e.getKey(),value);}balances.put(id,running);}return new Funds(balances,names);}
+ static long at(NavigableMap<String,Long> rows,String date){var entry=rows.floorEntry(date);return entry==null?0:entry.getValue();}
+ static void check(Api a,Funds before){var after=read(a);for(var f:after.balances.entrySet()){var old=before.balances.getOrDefault(f.getKey(),new TreeMap<>());var dates=new TreeSet<String>(old.keySet());dates.addAll(f.getValue().keySet());for(String date:dates){long balance=at(f.getValue(),date);if(balance<Math.min(0,at(old,date)))throw new Api.Fail(400,"Nguồn tiền «"+after.names.get(f.getKey())+"» không đủ tiền ngày "+date.substring(8)+"/"+date.substring(5,7)+"/"+date.substring(0,4)+". Thao tác làm số dư âm "+String.format(java.util.Locale.forLanguageTag("vi-VN"),"%,d",-balance)+" đ. Chọn nguồn tiền đủ số dư hoặc ghi nhận khoản thu thực tế trước.");}}}
+}
