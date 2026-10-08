@@ -17,4 +17,4 @@
 - Đạt: Từ chối file khôi phục hỏng và giữ dữ liệu hiện tại
 - Đạt: Đổi/quên mật khẩu, xoay mã khôi phục và đăng xuất
 
-Dữ liệu kiểm thử riêng: .test-data-1791450997456. Không dùng dữ liệu vận hành.
+Dữ liệu kiểm thử riêng: .test-data-1791454633518. Không dùng dữ liệu vận hành.

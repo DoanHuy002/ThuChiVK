@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from 'react';
 import {fmtDate,fmtTime,DateInput} from './Dates.jsx';
-const names={clearings:'Khấu trừ lương',vouchers:'Phiếu thu / chi / chuyển quỹ',obligations:'Công nợ / ứng lương',funds:'Nguồn tiền',contacts:'Đối tác / nhân viên',categories:'Danh mục',attendance:'Chấm công',evidence:'Bằng chứng'};
+const names={supplier_adjustments:'Trả hàng giảm nợ',clearings:'Khấu trừ lương',vouchers:'Phiếu thu / chi / chuyển quỹ',obligations:'Công nợ / ứng lương',funds:'Nguồn tiền',contacts:'Đối tác / nhân viên',categories:'Danh mục',attendance:'Chấm công',evidence:'Bằng chứng'};
 export default function Trash({api,admin,onChanged}){
  const [rows,setRows]=useState([]),[selected,setSelected]=useState({}),[search,setSearch]=useState(''),[type,setType]=useState(''),[from,setFrom]=useState(''),[to,setTo]=useState(''),[form,setForm]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState('');
  const load=async()=>{setRows(await api('/trash'));setSelected({});};useEffect(()=>{load().catch(e=>setError(e.message));},[]);
