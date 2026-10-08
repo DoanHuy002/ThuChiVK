@@ -1,0 +1,1 @@
+Kho 0.0.17: trên phiếu xuất linh kiện hoặc xuất xe, ghi Đơn vị vận chuyển và Cước phải trả nhà xe. Trong Thu Chi 1.1.5 mở Công nợ phải trả → Đồng bộ từ kho. Phiếu cũ chưa ghi tên nhà xe cần bổ sung trong Kho. Tiền vận chuyển thu khách không tạo công nợ nhà xe. Thanh toán ghi riêng và chọn nguồn tiền đủ số dư. Không nhập lại thủ công khoản đã đồng bộ.

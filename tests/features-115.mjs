@@ -1,0 +1,25 @@
+import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';import net from 'node:net';import {spawn} from 'node:child_process';
+const root=path.resolve(import.meta.dirname,'..'),data=path.join(root,'.test-features-112-'+Date.now());fs.mkdirSync(data);fs.mkdirSync(path.join(data,'sockets'));
+const port=await new Promise(resolve=>{let s=net.createServer();s.listen(0,'127.0.0.1',()=>{let p=s.address().port;s.close(()=>resolve(p));});});const secret=crypto.randomBytes(24).toString('hex');let token='';
+const processBackend=spawn(path.join(root,'runtime/bin/java.exe'),['-Djdk.net.unixdomain.tmpdir='+path.join(data,'sockets'),'-jar',path.join(root,'backend/target/thuchi-'+JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8')).version+'.jar')],{windowsHide:true,env:{...process.env,VK_DATA_DIR:data,VK_PORT:String(port),VK_BRIDGE_SECRET:secret,VK_DESKTOP:'true'},stdio:['pipe','pipe','pipe']});let log='';processBackend.stdout.on('data',x=>log+=x);processBackend.stderr.on('data',x=>log+=x);
+async function api(route,method='GET',body,expected=200){let r=await fetch('http://127.0.0.1:'+port+'/api'+route,{method,headers:{'X-VK-Bridge':secret,Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});let v=await r.json();assert.equal(r.status,expected,route+' '+JSON.stringify(v));return v;}
+const post=(route,body,expected)=>api(route,'POST',body,expected);const del=(route,row)=>api(route,'DELETE',{version:row.version,reason:'Nhập nhầm'});const item=(table,r)=>({table,id:r.id,version:r.version});
+try{
+ let ready=false;for(let i=0;i<120;i++){try{await api('/health');ready=true;break;}catch{}await new Promise(r=>setTimeout(r,250));}assert(ready,log);
+ await post('/auth/register',{username:'admin',name:'Kế toán thử',password:'1'});token=(await post('/auth/login',{username:'admin',password:'1'})).token;
+
+ const fund=await post('/masters/funds',{name:'Quỹ',kind:'CASH',opening:2000000,opening_date:'2026-10-01'});
+ const source=crypto.randomUUID(),file=path.join(data,'finance-sync.json');
+ let docs=[500000,600000].map((amount,i)=>({id:'CARRIER-'+i,code:'XK-'+i,operation:'CARRIER',status:'POSTED',deleted:false,supplier_id:'CARRIER:ahung',supplier_name:'Nhà xe A Hùng',supplier_code:'Nhà xe',phone:'0900000000',address:'',date:'2026-10-08',note:'Cước',priced:true,amount,customer_transport_fee:900000,items:[]}));
+ const write=()=>fs.writeFileSync(file,JSON.stringify({format:'VK-WAREHOUSE-FINANCE-1',source_id:source,generated_at:new Date().toISOString(),documents:docs}));
+ write();await post('/warehouse/connect',{path:file});assert.equal((await post('/warehouse/sync',{source})).created,2);
+ const debts=()=>api('/obligations');let rows=await debts();assert.equal(rows.length,2);assert(rows.every(x=>x.debt_group==='CARRIER'));assert.equal(rows.reduce((s,x)=>s+x.outstanding,0),1100000);assert.equal(rows[0].contact_id,rows[1].contact_id);
+ const contacts=await api('/masters/contacts');assert.equal(contacts.find(x=>x.id===rows[0].contact_id).party_type,'CARRIER');
+ const cash=async()=>(await api('/report?from=2026-10-01&to=2026-10-31')).funds[0].balance;
+ assert.equal(await cash(),2000000);assert.equal((await api('/vouchers')).length,0);assert.equal((await post('/warehouse/sync',{source})).created,0);
+ docs[0].amount=700000;write();assert.equal((await post('/warehouse/sync',{source})).updated,1);rows=await debts();let debt=rows.find(x=>x.amount===700000);assert(debt);
+ await post('/vouchers',{type:'EXPENSE',contact_id:debt.contact_id,obligation_id:debt.id,fund_id:fund.id,date:'2026-10-08',amount:200000,description:'Trả nhà xe'});assert.equal(await cash(),1800000);
+ docs[0].amount=800000;write();assert.equal((await post('/warehouse/sync',{source})).issues,1);const link=(await api('/warehouse/documents')).find(x=>x.document_id==='CARRIER-0');await post('/warehouse/reconcile',{source,document:'CARRIER-0',confirmed:true,pending_json:link.pending_json});assert.equal((await debts()).find(x=>x.id===debt.id).outstanding,600000);assert.equal(await cash(),1800000);
+ console.log('PASS carrier grouping, actual cost not customer fee, duplicate prevention, no automatic cash expense, unpaid edit and paid reconciliation preserve payment');
+
+}catch(e){console.error(e);console.error(log.slice(-4000));process.exitCode=1;}finally{processBackend.stdin.end();await new Promise(resolve=>{let t=setTimeout(()=>{processBackend.kill();resolve();},8000);processBackend.once('exit',()=>{clearTimeout(t);resolve();});});}

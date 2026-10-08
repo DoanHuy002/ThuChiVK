@@ -1,7 +1,7 @@
 import React,{useState,useEffect} from 'react';import {DateInput,fmtDate} from './Dates.jsx';import MoneyInput from './MoneyInput.jsx';
 const money=n=>Number(n||0).toLocaleString('vi-VN')+' đ';const kindNames={IMPORT:'Nhập hàng',PAYMENT:'Thanh toán tổng nợ',LEGACY_PAYMENT:'Thanh toán liên kết cũ',RETURN:'Trả hàng giảm nợ',REFUND:'Nhà cung cấp hoàn tiền'};
-export default function SupplierPanel({api,admin,data,onChanged,onPay,onDocument}){
- const [suppliers,setSuppliers]=useState([]),[selected,setSelected]=useState(''),[detail,setDetail]=useState(null),[search,setSearch]=useState(''),[form,setForm]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState('');
+export default function SupplierPanel({api,admin,data,onChanged,onPay,onDocument,initialContact=null}){
+ const [suppliers,setSuppliers]=useState([]),[selected,setSelected]=useState(initialContact?String(initialContact):''),[detail,setDetail]=useState(null),[search,setSearch]=useState(''),[form,setForm]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState('');
  async function load(){const rows=await api('/supplier-ledger');setSuppliers(rows);const id=selected||String(rows[0]?.id||'');if(id){setSelected(id);setDetail(await api('/supplier-ledger/'+id));}else setDetail(null);}useEffect(()=>{load().catch(e=>setError(e.message));},[data]);
  async function choose(id){setSelected(id);setError('');try{setDetail(id?await api('/supplier-ledger/'+id):null);}catch(e){setError(e.message);}}
  const supplier=suppliers.find(s=>String(s.id)===String(selected));const rows=detail?.events.filter(e=>JSON.stringify(e).toLocaleLowerCase('vi').includes(search.toLocaleLowerCase('vi')))||[];
