@@ -1,5 +1,5 @@
 const {contextBridge,ipcRenderer}=require('electron');
-contextBridge.exposeInMainWorld('vk',{
+contextBridge.exposeInMainWorld('vk',{connection:request=>ipcRenderer.invoke('connection',request),
  pickWarehouse:token=>ipcRenderer.invoke('pick-warehouse',{token}),
  pickEvidence:token=>ipcRenderer.invoke('pick-evidence',{token}),
  uploadEvidence:(entity,id,key,caption,token)=>ipcRenderer.invoke('upload-evidence',{entity,id,key,caption,token}),

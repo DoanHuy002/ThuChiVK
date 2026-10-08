@@ -7,6 +7,8 @@ export default function Attendance({api,employees,admin,exportRows}){
  const [month,setMonth]=useState(initialMonth),[data,setData]=useState({entries:[],lock:{locked:0,version:0}}),[search,setSearch]=useState(''),[editor,setEditor]=useState(null),[lockForm,setLockForm]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[message,setMessage]=useState('');const generation=useRef(0);
  async function load(m=month){const n=++generation.current;try{const result=await api('/attendance/'+m);if(n===generation.current){setData(result);setError('');}}catch(e){if(n===generation.current)setError(e.message);}}
  useEffect(()=>{setEditor(null);setLockForm(null);setData({entries:[],lock:{locked:0,version:0}});if(/^\d{4}-\d{2}$/.test(month))load(month);return()=>{generation.current++;};},[month]);
+
+ useEffect(()=>{const fn=()=>{if(!busy&&!editor&&!lockForm)load().catch(e=>setError(e.message));};window.addEventListener('vk-data-refresh',fn);return()=>window.removeEventListener('vk-data-refresh',fn);});
  const days=/^\d{4}-\d{2}$/.test(month)?new Date(Number(month.slice(0,4)),Number(month.slice(5)),0).getDate():0;
  const visible=employees.filter(e=>(e.name+' '+e.attendance_code).toLocaleLowerCase('vi').includes(search.toLocaleLowerCase('vi')));
  const entry=(id,d)=>data.entries.find(e=>e.employee_id===id&&e.date===d);
