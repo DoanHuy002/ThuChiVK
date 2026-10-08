@@ -1,0 +1,14 @@
+ALTER TABLE clearings ADD COLUMN deleted INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE clearings ADD COLUMN version INTEGER NOT NULL DEFAULT 1;
+ALTER TABLE obligations ADD COLUMN salary_month TEXT NOT NULL DEFAULT '';
+UPDATE obligations SET salary_month=substr(date,1,7) WHERE kind='ADVANCE';
+CREATE TABLE deletion_control(id INTEGER PRIMARY KEY CHECK(id=1),enabled INTEGER NOT NULL DEFAULT 0 CHECK(enabled IN (0,1)));
+INSERT INTO deletion_control VALUES(1,0);
+DROP TRIGGER audit_no_delete;
+CREATE TRIGGER audit_no_delete BEFORE DELETE ON audit WHEN (SELECT enabled FROM deletion_control WHERE id=1)=0 BEGIN SELECT RAISE(ABORT,'Audit immutable'); END;
+DROP TRIGGER evidence_no_delete;
+CREATE TRIGGER evidence_no_delete BEFORE DELETE ON evidence WHEN (SELECT enabled FROM deletion_control WHERE id=1)=0 BEGIN SELECT RAISE(ABORT,'Evidence immutable'); END;
+CREATE TABLE warehouse_sources(id TEXT PRIMARY KEY,path TEXT NOT NULL,last_sync TEXT NOT NULL DEFAULT '');
+CREATE TABLE warehouse_links(source_id TEXT NOT NULL,document_id TEXT NOT NULL,obligation_id INTEGER REFERENCES obligations(id),supplier_id TEXT NOT NULL,snapshot_json TEXT NOT NULL,state TEXT NOT NULL DEFAULT 'SYNCED',PRIMARY KEY(source_id,document_id));
+CREATE TABLE warehouse_suppliers(source_id TEXT NOT NULL,supplier_id TEXT NOT NULL,contact_id INTEGER NOT NULL REFERENCES contacts(id),PRIMARY KEY(source_id,supplier_id));
+PRAGMA user_version=4;

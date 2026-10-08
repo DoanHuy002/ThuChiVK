@@ -14,3 +14,6 @@ docs/excel-analysis.json
 docs/PHAN-TICH-EXCEL.md
 *.sqlite
 *.sqlite-*
+
+.test-features*/
+.test-connector*/

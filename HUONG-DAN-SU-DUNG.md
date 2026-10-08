@@ -2,7 +2,7 @@
 
 ## Cài và mở
 
-1. Chạy `releases/VinhKhang-ThuChi-Setup-1.1.1.exe`. Có thể chọn thư mục cài trên D.
+1. Chạy `releases/VinhKhang-ThuChi-Setup-1.1.2.exe`. Có thể chọn thư mục cài trên D.
 2. Mở **Vĩnh Khang Thu Chi** từ shortcut. Bộ cài kèm Java, không cần cài Java/Node riêng trên máy kế toán.
 3. Lần đầu nhập họ tên, tên đăng nhập không dấu và mật khẩu 1–72 ký tự để tạo kế toán Admin.
 4. Lưu mã khôi phục được hiển thị một lần, rồi đăng nhập.
@@ -89,3 +89,6 @@ Ngày nhập và lịch chọn ngày hiển thị **dd/mm/yyyy**, tháng và cá
 ## Bản 1.1.1 — mật khẩu
 
 Mật khẩu tối thiểu 1 ký tự, tối đa 72 ký tự; không được để trống. Áp dụng khi tạo tài khoản, đổi và đặt lại mật khẩu. Mật khẩu cũ vẫn dùng được. Bấm nút mắt bên phải từng ô để hiện/ẩn nội dung vừa nhập; mở form mới mặc định ẩn. Các ô đăng nhập, đăng ký, đổi/đặt lại mật khẩu, tạo người dùng và nhập mật khẩu khôi phục đều có nút mắt.
+
+
+Các thay đổi 1.1.2 và cách kết nối app Kho: xem docs/RELEASE-1.1.2.md.
