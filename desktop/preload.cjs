@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld('vk',{connection:request=>ipcRenderer.invoke('co
  discardEvidence:(keys,token)=>ipcRenderer.invoke('discard-evidence',{keys,token}),
  downloadEvidence:(id,token)=>ipcRenderer.invoke('download-evidence',{id,token}),
  api:(route,method='GET',body=null,token='')=>ipcRenderer.invoke('api',{route,method,body,token}),
+ exportExcel:(name,report,token)=>ipcRenderer.invoke('export-excel',{name,report,token}),
  exportCSV:(name,text)=>ipcRenderer.invoke('export-csv',{name,text}),
  saveBackup:(name,token)=>ipcRenderer.invoke('save-backup',{name,token}),
  restore:(password,token)=>ipcRenderer.invoke('restore',{password,token}),
