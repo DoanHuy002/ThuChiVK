@@ -17,4 +17,13 @@
 - Đạt: Từ chối file khôi phục hỏng và giữ dữ liệu hiện tại
 - Đạt: Đổi/quên mật khẩu, xoay mã khôi phục và đăng xuất
 
-Dữ liệu kiểm thử riêng: .test-data-1791471916380. Không dùng dữ liệu vận hành.
+Dữ liệu kiểm thử riêng: .test-data-1791716462992. Không dùng dữ liệu vận hành.
+
+
+## Thu Chi 1.2.4 — Nhập Excel đơn giản (11/10/2026)
+
+- Backend unit tests: 12 templates, required headers, borders, text identifiers, blank input sheet, strict Vietnamese date and integer money rules.
+- Isolated API integration: all 12 types committed successfully; previews rolled back without changing business tables or audit. Verified leading zeros, half-day/overtime attendance, requested/issued advances, supplier total payments, carrier payments and loan receipts/principal.
+- Invalid dates, formulas, missing amounts, duplicate rows/files, excessive debt payments, insufficient balance and locked attendance months rejected. Changed balance after preview aborts the entire selected commit. Replay and Viewer access rejected.
+- Actual Electron UI: 12 colored cards in three columns; template saved through native dialog, fund selected, preview amounts grouped, selected import committed, repeated file blocked, legacy import screen retained; no renderer errors.
+- Existing integration suite: 16 groups passed (cash, transfers, obligations, evidence, attendance, old Excel import, backup/restore, authorization).

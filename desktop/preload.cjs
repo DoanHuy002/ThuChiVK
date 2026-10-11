@@ -10,6 +10,8 @@ contextBridge.exposeInMainWorld('vk',{connection:request=>ipcRenderer.invoke('co
  exportCSV:(name,text)=>ipcRenderer.invoke('export-csv',{name,text}),
  saveBackup:(name,token)=>ipcRenderer.invoke('save-backup',{name,token}),
  restore:(password,token)=>ipcRenderer.invoke('restore',{password,token}),
+ importTemplate:b=>ipcRenderer.invoke('import-template',b),
+ simpleImport:b=>ipcRenderer.invoke('simple-import',b),
  importExcel:token=>ipcRenderer.invoke('import-excel',{token}),
  updates:(action,token,url)=>ipcRenderer.invoke('updates',{action,token,url}),
  onUpdate:cb=>{const fn=(_e,s)=>cb(s);ipcRenderer.on('update-state',fn);return()=>ipcRenderer.removeListener('update-state',fn);}
